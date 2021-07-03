@@ -1,4 +1,5 @@
 from collections import deque
+import numpy as np
 
 def dqn(env, 
         brain_name, 
@@ -49,9 +50,9 @@ def dqn(env,
         if i_episode % 100 == 0:
             print('\rEpisode {}\tAverage Score: {:.2f}'.format(i_episode, np.mean(scores_window)))
         mean_score = np.mean(scores_window)
-        if train_mode and checkpoint and mean >= checkpoint and mean >= max_mean_score:
+        if train_mode and checkpoint and mean_score >= checkpoint and mean_score >= max_mean_score:
             max_mean_score = mean_score
             print('\nEnvironment solved in {:d} episodes!\tAverage Score: {:.2f}'.format(i_episode-100, mean_score))
             agent.save_model(f'checkpoint-{np.round(max_mean_score, 2)}')
-            break
+            #break
     return scores
