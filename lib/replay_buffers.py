@@ -96,6 +96,7 @@ class PrioritizedReplayBuffer(object):
 
         # allocate the buffer at start - better than failing half way through!
         self.buffer = [self.experience for i in range(self.size)]
+        self.raw_priorities = [0 for i in range(self.size)]
         # create sumtree used for storing experience priorities
         # this provides an efficient way of sampling experiences proportional with their priority (td error)
         self.base_node, self.leaf_nodes = create_tree([0 for i in range(self.size)])
@@ -155,6 +156,7 @@ class PrioritizedReplayBuffer(object):
             self.update_priority(idxs[i], deltas[i][0])
             
     def update_priority(self, idx: int, priority: float):
+        self.raw_priorities[idx] = priority
         update_node(self.leaf_nodes[idx], self.adjust_priority(priority))
         
     # see paper adding epsilon to priority and then taking to power of alpha
@@ -172,9 +174,9 @@ class PrioritizedReplayBuffer(object):
         prev_alpha = self.alpha
         self.alpha *= self.alpha_decay_rate
         for i in range(min(self.experience_count, self.size)):
-            sample_node = self.leaf_nodes[i]
-            old_p = np.power(sample_node.value, 1/prev_alpha) - self.min_priority
-            self.update_priority(i, old_p)
+            # sample_node = self.leaf_nodes[i]
+            # old_p = np.power(sample_node.value, 1/prev_alpha) - self.min_priority
+            self.update_priority(i, self.raw_priorities[i])
     
         self.beta *= self.beta_growth_rate
         if self.beta > 1:
