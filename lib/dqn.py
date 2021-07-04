@@ -14,7 +14,8 @@ def dqn(env,
         eps_end=0.01, 
         eps_decay=0.995,
         checkpoint=None,
-        get_state=get_state):
+        get_state=get_state,
+        agent_name=''):
     """Deep Q-Learning.
     
     Params
@@ -57,6 +58,6 @@ def dqn(env,
         if train_mode and checkpoint and mean_score >= checkpoint and mean_score >= max_mean_score:
             max_mean_score = mean_score
             print('\nEnvironment solved in {:d} episodes!\tAverage Score: {:.2f}'.format(i_episode-100, mean_score))
-            agent.save_model(f'checkpoint-{np.round(max_mean_score, 2)}')
+            agent.save_model(f'checkpoint-{agent_name}-{np.round(max_mean_score, 2)}')
             #break
     return scores

@@ -14,15 +14,18 @@ The task is episodic, and the goal is for the agent to get an average score of +
 
 A number of agents have been developed taking inspiration from the following papers:
 
-1. [link](https://storage.googleapis.com/deepmind-media/dqn/DQNNaturePaper.pdf "Human-level control through deep reinforcement learning") 
-2. [link](https://arxiv.org/pdf/1511.06581.pdf "Dueling Network Architectures for Deep Reinforcement Learning")
-3. [link](https://arxiv.org/pdf/1509.06461.pdf "Deep Reinforcement Learning with Double Q-learning")
-4. [link](https://arxiv.org/pdf/1511.05952.pdf "Prioritized Experience Replay")
+1. [Human-level control through deep reinforcement learning](https://storage.googleapis.com/deepmind-media/dqn/DQNNaturePaper.pdf) 
+2. [Dueling Network Architectures for Deep Reinforcement Learning](https://arxiv.org/pdf/1511.06581.pdf)
+3. [Deep Reinforcement Learning with Double Q-learning](https://arxiv.org/pdf/1509.06461.pdf)
+4. [Prioritized Experience Replay](https://arxiv.org/pdf/1511.05952.pdf)
 
-The basic agent was implemented using the algorithm described in [link](https://storage.googleapis.com/deepmind-media/dqn/DQNNaturePaper.pdf "Human-level control through deep reinforcement learning") 
+The basic agent was implemented using the algorithm described in [Human-level control through deep reinforcement learning](https://storage.googleapis.com/deepmind-media/dqn/DQNNaturePaper.pdf) 
+
+## Best result
+
 
 ## Running the code
-If you want to experiment with the code then clone this repository please go to the Getting Started section below
+If you want to experiment with the code then clone this repository and follow the Getting Started section below
 
 ### Getting Started
 
@@ -37,11 +40,28 @@ If you want to experiment with the code then clone this repository please go to 
     (_For AWS_) If you'd like to train the agent on AWS (and have not [enabled a virtual screen](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Training-on-Amazon-Web-Service.md)), then please use [this link](https://s3-us-west-1.amazonaws.com/udacity-drlnd/P1/Banana/Banana_Linux_NoVis.zip) to obtain the environment.
 
 
-### Notebooks
+### Jupyter Notebooks
 
 There are a number of notebooks that you may want to explore
 
-1. Navigation
-2. Navigation Test
+1. Navigation - which 
+2. Report: Provides more details on the different models and the results of these models
+3. Navigation Pixel: This demonstrates an agent that uses an image based state
+
+### Source code
+All source code, outside of the Jupyter notebooks is stored in the libs folder. 
+- dqn.py: provides a function to run multiple espisodes of an agent, automatically saving the model if it achieves the goal
+- agents.py: provides a bas agent class and two subclasses:
+    - AgentExerperienceReplay implementing a experience replay algorithm
+    - AgentPrioritizedExperience implementing a prioritised experience replay algorithm
+- models.py: provides a number of alternative Neural Network models:
+    - QNetwork: A basic linear model
+    - DuelingQNetwork: A dueling linear model 
+    - DuelingConvQNetwork: a dueling convolution network
+    
+
+    
+
+
 
 
