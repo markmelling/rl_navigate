@@ -189,8 +189,8 @@ class AgentPrioritizedExperience(AgentBase):
     def __init__(self, state_size, action_size, seed, 
                  compute_weights=False, 
                  prioritized_experience=True, 
-                 dueling_nn=False,
-                 train_mode=True):
+                 train_mode=True,
+                 create_model=None):
         """Initialize an Agent object.
         
         Params
@@ -204,9 +204,9 @@ class AgentPrioritizedExperience(AgentBase):
         #self.seed = random.seed(seed)
         #super(AgentPrioritizedExperience, self).__init__(state_size, action_size, seed, train_mode=train_mode)
                 # Q-Network
-        if dueling_nn:
-            local = DuelingQNetwork(state_size, action_size, seed)
-            target = DuelingQNetwork(state_size, action_size, seed)
+        if create_model:
+            local_model = create_model(state_size, action_size, seed)
+            target_model = create_model(state_size, action_size, seed)
         else:
             local = DuelingQNetwork(state_size, action_size, seed)
             target = DuelingQNetwork(state_size, action_size, seed)
