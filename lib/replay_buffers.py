@@ -167,15 +167,12 @@ class PrioritizedReplayBuffer(object):
         """
         Update hyper parameters
         """
-        #print('\nupdate_hpyerparameters')
         # it says (page 4) that segment boundaries only change when N or alpha change
         # does this mean we should be re-computing the priorities when alpha decays?
   
         prev_alpha = self.alpha
         self.alpha *= self.alpha_decay_rate
         for i in range(min(self.experience_count, self.size)):
-            # sample_node = self.leaf_nodes[i]
-            # old_p = np.power(sample_node.value, 1/prev_alpha) - self.min_priority
             self.update_priority(i, self.raw_priorities[i])
     
         self.beta *= self.beta_growth_rate
