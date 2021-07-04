@@ -59,7 +59,9 @@ class AgentBase():
             state (array_like): current state
             eps (float): epsilon, for epsilon-greedy action selection
         """
-        state = torch.from_numpy(state).float().unsqueeze(0).to(device)
+        #state = torch.from_numpy(state).float().unsqueeze(0).to(device)
+        state = torch.from_numpy(state).float().to(device)
+
         if self.train_mode:
             self.qnetwork_local.eval()
         with torch.no_grad():
@@ -100,7 +102,7 @@ class AgentBase():
 class AgentExerperienceReplay(AgentBase):
     """Interacts with and learns from the environment."""
 
-    def __init__(self, state_size, action_size, seed, train_mode=True):
+    def __init__(self, state_size, action_size, seed, train_mode=True, create_model=None):
         """Initialize an Agent object.
         
         Params
@@ -112,11 +114,18 @@ class AgentExerperienceReplay(AgentBase):
         #self.state_size = state_size
         #self.action_size = action_size
         #self.seed = random.seed(seed)
+        if create_model:
+            local_model = create_model(state_size, action_size, seed)
+            target_model = create_model(state_size, action_size, seed)
+        else:
+            local_model = QNetwork(state_size, action_size, seed)
+            target_model = QNetwork(state_size, action_size, seed)
+            
         super(AgentExerperienceReplay, self).__init__(state_size, 
                                                       action_size, 
                                                       seed,
-                                                      QNetwork(state_size, action_size, seed),
-                                                      QNetwork(state_size, action_size, seed),
+                                                      local_model,
+                                                      target_model,
                                                       train_mode=train_mode)
 
 

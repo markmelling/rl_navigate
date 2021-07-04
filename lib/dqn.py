@@ -1,6 +1,9 @@
 from collections import deque
 import numpy as np
 
+def get_state(env_info):
+    return env_info.vector_observations[0] 
+
 def dqn(env, 
         brain_name, 
         agent, 
@@ -10,7 +13,8 @@ def dqn(env,
         eps_start=1.0, 
         eps_end=0.01, 
         eps_decay=0.995,
-        checkpoint=None):
+        checkpoint=None,
+        get_state=get_state):
     """Deep Q-Learning.
     
     Params
@@ -30,12 +34,12 @@ def dqn(env,
     max_mean_score = 0
     for i_episode in range(1, n_episodes+1):
         env_info = env.reset(train_mode=train_mode)[brain_name]
-        state = env_info.vector_observations[0]            # get the current state
+        state = get_state(env_info)            # get the current state
         score = 0
         for t in range(max_t):
             action = agent.act(state, eps)
             env_info = env.step(action)[brain_name]        # send the action to the environment
-            next_state = env_info.vector_observations[0]   # get the next state
+            next_state = get_state(env_info)  # get the next state
             done = env_info.local_done[0]                  # see if episode has finished
             reward = env_info.rewards[0]                   # get the reward
             agent.step(state, action, reward, next_state, done)

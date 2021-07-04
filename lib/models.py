@@ -70,7 +70,10 @@ class DuelingQNetwork(nn.Module):
 class DuelingConvQNetwork(nn.Module):
     """Actor (Policy) Model."""
 
-    def __init__(self, state_size, action_size, seed, fc1_units=64, fc2_units=64):
+    # in_channels is the number of features:
+    # for a grey scale image this is 1
+    # for a colour image it's 3
+    def __init__(self, state_size, action_size, seed, in_channels=3, fc1_units=64, fc2_units=64):
         """Initialize parameters and build model.
         Params
         ======
@@ -83,9 +86,9 @@ class DuelingConvQNetwork(nn.Module):
         super(DuelingConvQNetwork, self).__init__()
         self.seed = torch.manual_seed(seed)
         self.action_size = action_size
-        self.conv1 = nn.Conv1d(in_channels=state_size, out_channels=32, kernel_size=8, stride=4)
-        self.conv2 = nn.Conv1d(in_channels=32, out_channels=64, kernel_size=4, stride=2)
-        self.conv3 = nn.Conv1d(in_channels=64, out_channels=64, kernel_size=3, stride=1)
+        self.conv1 = nn.Conv2d(in_channels=in_channels, out_channels=32, kernel_size=8, stride=4)
+        self.conv2 = nn.Conv2d(in_channels=32, out_channels=64, kernel_size=4, stride=2)
+        self.conv3 = nn.Conv2d(in_channels=64, out_channels=64, kernel_size=3, stride=1)
 
         in_features = 7*7*64
         self.fc1_val = nn.Linear(in_features, fc1_units)
@@ -99,16 +102,18 @@ class DuelingConvQNetwork(nn.Module):
 
     def forward(self, state):
         """Build a network that maps state -> action values."""
-        print('state.size', state.size())
+        #print('state.size', state.size())
         #x = state.view(state.size(1), -1)
 
         #x = F.relu(self.conv1(torch.transpose(state, 0, 1)))
-        x = F.relu(self.conv1(state))
+        x = state.transpose(1,3).float()
+
+        x = F.relu(self.conv1(x))
 
         x = F.relu(self.conv2(x))
         x = F.relu(self.conv3(x))
         x = x.view(x.size(0), -1)
-        print('size of x', x.size(0))
+        #print('size of x', x.size(0))
         val = F.relu(self.fc1_val(x))
         adv = F.relu(self.fc1_adv(x))
         val = F.relu(self.fc2_val(val))
