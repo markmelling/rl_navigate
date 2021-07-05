@@ -44,20 +44,23 @@ If you want to experiment with the code then clone this repository and follow th
 
 There are a number of notebooks that you may want to explore
 
-1. Navigation - which 
-2. Report: Provides more details on the different models and the results of these models
+1. Navigation - this demonstrates how to train a varity of different agents 
+2. Report: Provides more details on the different agents and models and the results of these trained agents
 3. Navigation Pixel: This demonstrates an agent that uses an image based state
 
 ### Source code
 All source code, outside of the Jupyter notebooks is stored in the libs folder. 
 - dqn.py: provides a function to run multiple espisodes of an agent, automatically saving the model if it achieves the goal
 - agents.py: provides a bas agent class and two subclasses:
-    - AgentExerperienceReplay implementing a experience replay algorithm
-    - AgentPrioritizedExperience implementing a prioritised experience replay algorithm
+    - AgentExperienceReplay implementing a experience replay algorithm
+    - AgentPrioritizedExperienceReplay implementing a prioritised experience replay algorithm
 - models.py: provides a number of alternative Neural Network models:
     - QNetwork: A basic linear model
     - DuelingQNetwork: A dueling linear model 
     - DuelingConvQNetwork: a dueling convolution network
+- replay_buffers.py
+    - ReplayBuffer: simple buffer to store experiences. samples are random
+    - PrioritizedReplayBuffer: uses a sumtree to manage prioritised experiences
     
 
     
