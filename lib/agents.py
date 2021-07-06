@@ -60,18 +60,21 @@ class AgentBase():
             state (array_like): current state
             eps (float): epsilon, for epsilon-greedy action selection
         """
+        # torch expects input (state in this case) to be defined in batches
+        # so use unsqueeze to add a batch dimension of 1
         state = torch.from_numpy(state).float().unsqueeze(0).to(device)
         # TODO this is for states that are images
         #state = torch.from_numpy(state).float().to(device)
 
-        if self.train_mode:
-            self.qnetwork_local.eval()
+        #print('act state.shape', state.shape)
+        self.qnetwork_local.eval()
         with torch.no_grad():
             action_values = self.qnetwork_local(state)
         if self.train_mode:
             self.qnetwork_local.train()
 
         # Epsilon-greedy action selection
+        # Epsilon should still be > 0 even when not training
         if random.random() > eps:
             return np.argmax(action_values.cpu().data.numpy())
         else:
@@ -96,6 +99,10 @@ class AgentBase():
     def get_target_and_expected(self, states, actions, rewards, next_states, dones, gamma):
         # get argmax
         # Get max predicted Q values (for next states) from local model
+        # print('get_target_and_expected states.shape', states.shape)
+        # print('get_target_and_expected next_states.shape', next_states.shape)
+
+
         next_actions = self.select_action(next_states)
 
         #_, next_actions = self.qnetwork_local(next_states).max(dim=1, keepdim=True)
@@ -127,14 +134,13 @@ class AgentBase():
             target_param.data.copy_(tau*local_param.data + (1.0-tau)*target_param.data)
 
     def load_model(self, name, path=MODEL_PATH):
-        self.qnetwork_local.load_state_dict(torch.load(f'{path}/{name}_local.pth'))
+        self.qnetwork_local.load_state_dict(torch.load(f'{path}/{name}.pth'))
         self.qnetwork_local.eval()
-        self.qnetwork_target.load_state_dict(torch.load(f'{path}/{name}_target.pth'))
+        self.qnetwork_target.load_state_dict(torch.load(f'{path}/{name}.pth'))
         self.qnetwork_target.eval()
         
     def save_model(self, name, path=MODEL_PATH):
-        torch.save(self.qnetwork_local.state_dict(), f'{path}/{name}_local.pth')
-        torch.save(self.qnetwork_local.state_dict(), f'{path}/{name}_target.pth')
+        torch.save(self.qnetwork_local.state_dict(), f'{path}/{name}.pth')
 
 
 class AgentExperienceReplay(AgentBase):
@@ -174,6 +180,9 @@ class AgentExperienceReplay(AgentBase):
         # Save experience in replay memory
         if not self.train_mode:
             return
+        #print('step state.shape', state.shape)
+        #print('step next_state.shape', next_state.shape)
+
         self.memory.add(state, action, reward, next_state, done)
         
         # Learn every UPDATE_EVERY time steps.
@@ -193,6 +202,8 @@ class AgentExperienceReplay(AgentBase):
             gamma (float): discount factor
         """
         states, actions, rewards, next_states, dones = experiences
+        # print('learn states.shape', states.shape)
+        # print('learn next_states.shape', next_states.shape)
         
         q_expected, q_targets = self.get_target_and_expected(states, 
                                                              actions, 

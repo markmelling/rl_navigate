@@ -38,7 +38,7 @@ def dqn(env,
         state = get_state(env_info)            # get the current state
         score = 0
         for t in range(max_t):
-            action = agent.act(state, eps)
+            action = agent.act(np.squeeze(state), eps)
             env_info = env.step(action)[brain_name]        # send the action to the environment
             next_state = get_state(env_info)  # get the next state
             done = env_info.local_done[0]                  # see if episode has finished
