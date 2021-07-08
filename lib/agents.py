@@ -32,7 +32,7 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 class AgentBase():
     """Interacts with and learns from the environment."""
 
-    def __init__(self, state_size, action_size, seed, local_model, target_model, train_mode=True, double_dqn=False):
+    def __init__(self, state_size, action_size, seed, local_model, target_model, batch_size=BATCH_SIZE, train_mode=True, double_dqn=False):
         """Initialize an Agent object.
         
         Params
@@ -45,6 +45,7 @@ class AgentBase():
         self.double_dqn = double_dqn
         self.state_size = state_size
         self.action_size = action_size
+        self.batch_size = batch_size
         self.seed = random.seed(seed)
         self.qnetwork_local = local_model.to(device)
         self.qnetwork_target = target_model.to(device)
@@ -146,7 +147,8 @@ class AgentBase():
 class AgentExperienceReplay(AgentBase):
     """Interacts with and learns from the environment."""
 
-    def __init__(self, state_size, action_size, seed, train_mode=True, create_model=None, double_dqn=False):
+    def __init__(self, state_size, action_size, seed, batch_size=BATCH_SIZE, 
+                 train_mode=True, create_model=None, double_dqn=False):
         """Initialize an Agent object.
         
         Params
@@ -167,6 +169,7 @@ class AgentExperienceReplay(AgentBase):
                                                       seed,
                                                       local_model,
                                                       target_model,
+                                                      batch_size=batch_size,
                                                       train_mode=train_mode,
                                                       double_dqn=double_dqn)
 
@@ -174,7 +177,7 @@ class AgentExperienceReplay(AgentBase):
         self.optimizer = optim.Adam(self.qnetwork_local.parameters(), lr=LR)
 
         # Replay memory
-        self.memory = ReplayBuffer(action_size, BUFFER_SIZE, BATCH_SIZE, seed)
+        self.memory = ReplayBuffer(action_size, BUFFER_SIZE, self.batch_size, seed)
     
     def step(self, state, action, reward, next_state, done):
         # Save experience in replay memory
@@ -189,7 +192,7 @@ class AgentExperienceReplay(AgentBase):
         self.t_step = (self.t_step + 1) % UPDATE_EVERY
         if self.t_step == 0:
             # If enough samples are available in memory, get random subset and learn
-            if len(self.memory) > BATCH_SIZE:
+            if len(self.memory) > self.batch_size:
                 experiences = self.memory.sample()
                 self.learn(experiences, GAMMA)
 
@@ -229,6 +232,7 @@ class AgentPrioritizedExperienceReplay(AgentBase):
     """Interacts with and learns from the environment."""
 
     def __init__(self, state_size, action_size, seed, 
+                 batch_size=BATCH_SIZE,
                  train_mode=True,
                  create_model=None,
                  double_dqn=False):
@@ -254,12 +258,13 @@ class AgentPrioritizedExperienceReplay(AgentBase):
                                                       local_model,
                                                       target_model,
                                                       train_mode=train_mode,
+                                                      batch_size=batch_size,
                                                       double_dqn=double_dqn)
 
         self.optimizer = optim.Adam(self.qnetwork_local.parameters(), lr=LR)
 
         self.memory = PrioritizedReplayBuffer(BUFFER_SIZE,
-                                                  BATCH_SIZE,
+                                                  self.batch_size,
                                                   seed)
         self.t_step_mem_par = 0
 
@@ -277,7 +282,7 @@ class AgentPrioritizedExperienceReplay(AgentBase):
             self.memory.update_hyperparameters()
         if self.t_step == 0:
             # If enough samples are available in memory, get random subset and learn
-            if self.memory.experience_count > BATCH_SIZE:
+            if self.memory.experience_count > self.batch_size:
                 experiences = self.memory.sample()
                 self.learn(experiences, GAMMA)
 

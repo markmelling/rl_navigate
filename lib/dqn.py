@@ -15,6 +15,7 @@ def dqn(env,
         eps_decay=0.995,
         checkpoint=None,
         get_state=get_state,
+        batched_state=False,
         agent_name=''):
     """Deep Q-Learning.
     
@@ -28,6 +29,9 @@ def dqn(env,
         eps_start (float): starting value of epsilon, for epsilon-greedy action selection
         eps_end (float): minimum value of epsilon
         eps_decay (float): multiplicative factor (per episode) for decreasing epsilon
+        batched_state: in the case of image based state then these are received in batches of 1
+        (1, 84, 84, 3) so need to be handled slightly differently
+        
     """
     scores = []                        # list containing scores from each episode
     scores_window = deque(maxlen=100)  # last 100 scores
@@ -38,7 +42,12 @@ def dqn(env,
         state = get_state(env_info)            # get the current state
         score = 0
         for t in range(max_t):
-            action = agent.act(np.squeeze(state), eps)
+            if batched_state:
+                no_batch_state = np.squeeze(state)
+                #print('batched_state size', no_batch_state.shape)
+            else:
+                no_batch_state = state 
+            action = agent.act(no_batch_state, eps)
             env_info = env.step(action)[brain_name]        # send the action to the environment
             next_state = get_state(env_info)  # get the next state
             done = env_info.local_done[0]                  # see if episode has finished
