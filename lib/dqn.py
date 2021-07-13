@@ -2,7 +2,7 @@ from collections import deque
 import numpy as np
 
 def get_state(env_info):
-    return env_info.vector_observations[0] 
+    return env_info.vector_observations[0], 0
 
 def dqn(env, 
         brain_name, 
@@ -39,7 +39,7 @@ def dqn(env,
     max_mean_score = 0
     for i_episode in range(1, n_episodes+1):
         env_info = env.reset(train_mode=train_mode)[brain_name]
-        state = get_state(env_info)            # get the current state
+        state, colour_reward = get_state(env_info)            # get the current state
         score = 0
         for t in range(max_t):
             if batched_state:
@@ -49,7 +49,7 @@ def dqn(env,
                 no_batch_state = state 
             action = agent.act(no_batch_state, eps)
             env_info = env.step(action)[brain_name]        # send the action to the environment
-            next_state = get_state(env_info)  # get the next state
+            next_state, colour_reward = get_state(env_info)  # get the next state
             done = env_info.local_done[0]                  # see if episode has finished
             reward = env_info.rewards[0]                   # get the reward
             agent.step(state, action, reward, next_state, done)
@@ -68,5 +68,5 @@ def dqn(env,
             max_mean_score = mean_score
             print('\nEnvironment solved in {:d} episodes!\tAverage Score: {:.2f}'.format(i_episode-100, mean_score))
             agent.save_model(f'checkpoint-{agent_name}-{np.round(max_mean_score, 2)}')
-            #break
+            break
     return scores

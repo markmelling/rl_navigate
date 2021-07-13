@@ -165,6 +165,11 @@ class DuelingConvQNetwork(nn.Module):
         #x = F.relu(self.conv1(torch.transpose(state, 0, 1)))
         x = state.transpose(1,3).float()
         #print('x.size', x.size())
+        x = F.relu(self.conv1(x))
+
+        x = F.relu(self.conv2(x))
+        x = F.relu(self.conv3(x))
+        x = x.view(x.size(0), -1)
 
         val = F.relu(self.fc1_val(x))
         adv = F.relu(self.fc1_adv(x))

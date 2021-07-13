@@ -8,6 +8,7 @@ import torch
 import random
 from collections import namedtuple, deque
 import queue
+import pickle
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
@@ -66,16 +67,32 @@ def propagate_changes(change: float, node: Node):
         propagate_changes(change, node.parent)
 
 
+        
 class PrioritizedReplayBuffer(object):
     # TODO remove this when ready
-    def __init__(self, size: int, batch_size: int, seed: int):
+    def __init__(self, 
+                 size: int, 
+                 batch_size: int, 
+                 seed: int, 
+                 alpha = 0.6,
+                 beta = 0.4):
+        # alpha = 0.6 and beta = 0.4 recommended in paper for proportional variant
 
         self.size = size
         self.batch_size = batch_size
         np.random.seed(seed)
+        self.alpha = alpha
+        self.alpha_decay_rate = 0.99
+        self.beta = beta
+        self.beta_growth_rate = 1.001
+        # min_priority prevents edge-case of transitions not being revisited
+        # once their error is zero
+        self.min_priority = 0.01 
+        self.max_priority = 0
+
         self.curr_write_idx = 0
         self.experience_count = 0
-        self.experience = namedtuple("Experience", field_names=["state", "action", "reward", "next_state", "done"])
+        self.experience = namedtuple("Experience", field_names=["state", "action", "reward", "next_state", "done", "sampled_count"])
 
         # this is used to store experiences when they are first recieved
         # they will be sampled before experiences already with a priority 
@@ -89,25 +106,19 @@ class PrioritizedReplayBuffer(object):
         # create sumtree used for storing experience priorities
         # this provides an efficient way of sampling experiences proportional with their priority (td error)
         self.base_node, self.leaf_nodes = create_tree([0 for i in range(self.size)])
-        # alpha = 0.6 and beta = 0.4 recommended in paper for proportional variant
-        self.alpha = 0.6
-        self.alpha_decay_rate = 0.99
-        self.beta = 0.4
-        self.beta_growth_rate = 1.001
 
-        self.min_priority = 0.01
         
     def add(self, state, action, reward, next_state, done):
         """Add a new experience to memory."""
-        e = self.experience(state, action, reward, next_state, done)
+        e = self.experience(state, action, reward, next_state, done, 0)
         # add index to 'not_sampled' queue so these can be provided first 
         # when sampling so as to ensure they are seen at least once 
-        self.not_sampled.put(self.curr_write_idx) 
+        #  self.not_sampled.put(self.curr_write_idx) 
         # add experience to buffer
         self.buffer[self.curr_write_idx] = e
         # setting the priority of a new experience to 0 as it will be sampled
         # first anyway, as it is in not_sampled queue
-        priority = 0
+        priority = self.max_priority
         self.update_priority(self.curr_write_idx, priority)
 
         self.curr_write_idx += 1
@@ -127,6 +138,9 @@ class PrioritizedReplayBuffer(object):
         
     # see paper adding epsilon to priority and then taking to power of alpha
     def adjust_priority(self, priority: float):
+        if self.max_priority < priority:
+            self.max_priority = priority
+            # print('updating max priority', self.max_priority)
         return np.power(priority + self.min_priority, self.alpha)
     
     def update_hyperparameters(self):
@@ -136,17 +150,20 @@ class PrioritizedReplayBuffer(object):
         # it says (page 4) that segment boundaries only change when N or alpha change
         # does this mean we should be re-computing the priorities when alpha decays?
   
-        prev_alpha = self.alpha
+        #prev_alpha = self.alpha
         self.alpha *= self.alpha_decay_rate
+        self.max_priority = 0
         for i in range(min(self.experience_count, self.size)):
             self.update_priority(i, self.raw_priorities[i])
-    
+
+        # print('update_hyperparameters max_priority', self.max_priority)
         self.beta *= self.beta_growth_rate
         if self.beta > 1:
             self.beta = 1
     
     def sample(self):
         # assumes there are sufficient samples available
+        # sample with proportional prioritization
         sampled_idxs = []
         samples = []
         is_weights = []
@@ -154,13 +171,15 @@ class PrioritizedReplayBuffer(object):
         # To sample a minibatch of size k, the range [0, ptotal] is divided equally into k ranges.
         # Next, a value is uniformly sampled from each range.
         # Finally the transitions that correspond to each of these sampled values are retrieved from the tree
+        segment_size = self.base_node.value/self.batch_size
+
         for i in range(self.batch_size):
             # get sample from 
             if not self.not_sampled.empty():
+                assert False
                 sample_idx = self.not_sampled.get()
                 sample_node = self.leaf_nodes[sample_idx]
             else:
-                segment_size = self.base_node.value/self.batch_size
                 start = i * segment_size
                 end = (i + 1) * segment_size
                 sample_val = np.random.uniform(start, end)
@@ -168,7 +187,16 @@ class PrioritizedReplayBuffer(object):
                 sample_node = retrieve_node(sample_val, self.base_node)
             
             sampled_idxs.append(sample_node.idx)
-            samples.append(self.buffer[sample_node.idx])
+            e = self.buffer[sample_node.idx]
+            # update sampled count
+            e = self.experience(e.state, 
+                                e.action, 
+                                e.reward, 
+                                e.next_state, 
+                                e.done,
+                                e.sampled_count + 1)
+            self.buffer[sample_node.idx] = e
+            samples.append(e)
             prob = sample_node.value / self.base_node.value
             available_samples = min(self.batch_size, self.experience_count)
             is_weights.append((available_samples + 1) * prob)
@@ -184,6 +212,12 @@ class PrioritizedReplayBuffer(object):
         dones = torch.from_numpy(np.vstack([e.done for e in samples if e is not None]).astype(np.uint8)).float().to(device)
   
         return (states, actions, rewards, next_states, dones, is_weights, sampled_idxs)
+
+    def save(self, name):
+        print('save not implemented')
+            
+    def load(self, name):
+        print('load not implemented')
 
 
 class ReplayBuffer:
@@ -243,4 +277,19 @@ class ReplayBuffer:
     def __len__(self):
         """Return the current size of internal memory."""
         return len(self.memory)
+    
+    def save(self, name):
+        d = [e._asdict() for e in self.memory]
+        with open(f'{name}.pickle', 'wb') as fp:
+            pickle.dump(d, fp)
+            
+    def load(self, name):
+        try:
+            with open(f'{name}.pickle', 'rb') as fp:
+                d = pickle.load(fp)
+            for ex in d:
+                self.add(ex['state'], ex['action'], ex['reward'], ex['next_state'], ex['done'])
+
+        except Exception:
+            print('not found')
 

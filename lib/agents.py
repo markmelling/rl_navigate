@@ -11,7 +11,9 @@ from collections import namedtuple, deque
 from lib.models import QNetwork, DuelingQNetwork
 from lib.replay_buffers import ReplayBuffer, PrioritizedReplayBuffer
 
-BUFFER_SIZE = int(1e5)  # replay buffer size
+#BUFFER_SIZE = int(1e5)  # replay buffer size
+BUFFER_SIZE = 2 ** 17 # needs to be power of 2 otherwise implementation of sum_tree won't work
+
 BATCH_SIZE = 64         # minibatch size
 GAMMA = 0.99            # discount factor
 TAU = 1e-3              # for soft update of target parameters
@@ -139,9 +141,11 @@ class AgentBase():
         self.qnetwork_local.eval()
         self.qnetwork_target.load_state_dict(torch.load(f'{path}/{name}.pth'))
         self.qnetwork_target.eval()
+        self.memory.load(name)
         
     def save_model(self, name, path=MODEL_PATH):
         torch.save(self.qnetwork_local.state_dict(), f'{path}/{name}.pth')
+        self.memory.save(name)
 
 
 class AgentExperienceReplay(AgentBase):
@@ -303,20 +307,46 @@ class AgentPrioritizedExperienceReplay(AgentBase):
                                                              dones, 
                                                              gamma)
 
+        #print('q_expected.shape', q_expected.shape)
+        #print('q_targets.shape', q_targets.shape)
+        
         # Compute loss
-        loss = F.mse_loss(q_expected, q_targets)
-        with torch.no_grad():
-            weight = sum(np.multiply(weights, loss.data.cpu().numpy()))
-            loss *= weight
+        ##### deltas = F.mse_loss(q_expected, q_targets)
+        deltas = q_expected - q_targets
+        #print('loss.shape', loss.data.cpu().numpy().shape)
+        #print('loss', loss)
+        
+        _sampling_weights = (torch.Tensor(weights)
+                                  .view((-1, 1)))
+        
+        # mean square error
+        loss = torch.mean((deltas * _sampling_weights)**2)
+
+        # importance sampling weights used to correct bias introduced 
+        # by prioritisation experience replay
+        # See Annealing the bias https://arxiv.org/abs/1511.05952
+        #with torch.no_grad():
+        #    weight = sum(np.multiply(weights, loss.data.cpu().numpy()))
+        #    print('weight', weight)
+        #    loss *= weight
+        #    print('weights.shape', weights.shape)
+        #    print('loss type', type(loss))
+        #    print('loss shape', loss.size())
+        #    loss *= weights
         # Minimize the loss
+        # call zero_grad before calling backward() 
+        # o.w. gradients are accumulated from multiple passes
         self.optimizer.zero_grad()
+        # backward computes dloss/dx for every parameter x
         loss.backward()
+        # updates parameters
         self.optimizer.step()
 
         # ------------------- update target network ------------------- #
         self.soft_update(self.qnetwork_local, self.qnetwork_target, TAU) 
         
         # ------------------- update priorities ------------------- #  
-        deltas = abs(q_expected.detach() - q_targets.detach()).numpy()
-        self.memory.update_priorities(deltas, indexes)  
+        priorities = abs(deltas.detach()).numpy()
+        #priorities = abs(q_expected.detach() - q_targets.detach()).numpy()
+        self.memory.update_priorities(priorities, indexes)  
 
