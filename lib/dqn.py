@@ -49,10 +49,13 @@ def dqn(env,
                 no_batch_state = state 
             action = agent.act(no_batch_state, eps)
             env_info = env.step(action)[brain_name]        # send the action to the environment
-            next_state, colour_reward = get_state(env_info)  # get the next state
+            # experiment to adjust reward proportional to size
+            # of banana rectangle - slightly positive for yellow and negative for blue
+            next_state, color_reward = get_state(env_info)  # get the next state
             done = env_info.local_done[0]                  # see if episode has finished
             reward = env_info.rewards[0]                   # get the reward
-            agent.step(state, action, reward, next_state, done)
+            adjusted_reward = reward + color_reward # add in color reward
+            agent.step(state, action, adjusted_reward, next_state, done)
             state = next_state
             score += reward
             if done:
