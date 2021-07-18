@@ -21,9 +21,7 @@ LR = 5e-4               # learning rate
 UPDATE_EVERY = 4        # how often to update the network
 
 # prioritized experience replay
-UPDATE_MEM_EVERY = 20          # how often to update the priorities
 UPDATE_MEM_PAR_EVERY = 3000     # how often to update the hyperparameters
-EXPERIENCES_PER_SAMPLING = math.ceil(BATCH_SIZE * UPDATE_MEM_EVERY / UPDATE_EVERY)
 
 MODEL_PATH = './saved_models'
 
