@@ -12,7 +12,7 @@ A reward of +1 is provided for collecting a yellow banana, and a reward of -1 is
 
 The task is episodic, and the goal is for the agent to get an average score of +13 over 100 consecutive episodes.
 
-A number of agents have been developed taking inspiration from the following papers:
+A number of agent variants have been developed taking inspiration from the following papers:
 
 1. [Human-level control through deep reinforcement learning](https://storage.googleapis.com/deepmind-media/dqn/DQNNaturePaper.pdf) 
 2. [Dueling Network Architectures for Deep Reinforcement Learning](https://arxiv.org/pdf/1511.06581.pdf)
@@ -21,7 +21,12 @@ A number of agents have been developed taking inspiration from the following pap
 
 The basic agent was implemented using the algorithm described in [Human-level control through deep reinforcement learning](https://storage.googleapis.com/deepmind-media/dqn/DQNNaturePaper.pdf) 
 
-## Best result
+## Best and worst results
+
+The agent that reached an average score of +13 over 100 consecutive episodes quickest used a uniformally sampled experience relay, a linear neural network (2 hidden layers) and double Q-learning, it achieved this in 429 episodes. This variant also managed to achieve the highest average for 100 episodes of over 16.
+
+The worst result was using a prioritised experience replay with a dueling network, which took 679 episodes to reach the same mark.
+
 
 
 ## Running the code
@@ -44,9 +49,9 @@ If you want to experiment with the code then clone this repository and follow th
 
 There are a number of notebooks that you may want to explore
 
-1. Navigation - this demonstrates how to train a varity of different agents 
-2. Report: Provides more details on the different agents and models and the results of these trained agents
-3. Navigation Pixel: This demonstrates an agent that uses an image based state
+1. Navigation.ipynb - this demonstrates how to train the different variants 
+2. Report.ipynb - Provides more details on the different agents and models and the results of these trained agents
+3. Navigation_Pixel.ipynb - This demonstrates an agent that uses an image based state
 
 ### Source code
 All source code, outside of the Jupyter notebooks is stored in the libs folder. 
@@ -61,7 +66,7 @@ All source code, outside of the Jupyter notebooks is stored in the libs folder.
 - replay_buffers.py
     - ReplayBuffer: simple buffer to store experiences. samples are random
     - PrioritizedReplayBuffer: uses a sumtree to manage prioritised experiences
-    
+- image.py: image processing function that are used to simplify the game images
 
     
 
