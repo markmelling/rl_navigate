@@ -92,13 +92,16 @@ class PrioritizedReplayBuffer(object):
 
         self.curr_write_idx = 0
         self.experience_count = 0
+        # sampled_count was included so as to conduct some tests 
+        # on the behaviour of the buffer 
         self.experience = namedtuple("Experience", field_names=["state", "action", "reward", "next_state", "done", "sampled_count"])
 
-        # this is used to store experiences when they are first recieved
-        # they will be sampled before experiences already with a priority 
+        
+        # this was used to store experiences when they are first recieved
+        # when used experienced will be sampled before experiences already with a priority 
         # once sampled they will get a priority and consequently will be sampled 
         # according to their priority
-        self.not_sampled = queue.Queue()
+        #self.not_sampled = queue.Queue()
 
         # allocate the buffer at start - better than failing half way through!
         self.buffer = [self.experience for i in range(self.size)]
@@ -111,11 +114,14 @@ class PrioritizedReplayBuffer(object):
     def add(self, state, action, reward, next_state, done):
         """Add a new experience to memory."""
         e = self.experience(state, action, reward, next_state, done, 0)
+       
+        # Note - no longer used 
         # add index to 'not_sampled' queue so these can be provided first 
         # when sampling so as to ensure they are seen at least once 
         #  self.not_sampled.put(self.curr_write_idx) 
         # add experience to buffer
         self.buffer[self.curr_write_idx] = e
+        # Note - no longer used 
         # setting the priority of a new experience to 0 as it will be sampled
         # first anyway, as it is in not_sampled queue
         priority = self.max_priority
@@ -148,7 +154,7 @@ class PrioritizedReplayBuffer(object):
         Update hyper parameters
         """
         # it says (page 4) that segment boundaries only change when N or alpha change
-        # does this mean we should be re-computing the priorities when alpha decays?
+        # re-computing the priorities when alpha decays
   
         #prev_alpha = self.alpha
         self.alpha *= self.alpha_decay_rate
@@ -174,7 +180,7 @@ class PrioritizedReplayBuffer(object):
         segment_size = self.base_node.value/self.batch_size
 
         for i in range(self.batch_size):
-            # get sample from 
+            # Note: this is no longer used, hence the assert 
             if not self.not_sampled.empty():
                 assert False
                 sample_idx = self.not_sampled.get()
