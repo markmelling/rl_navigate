@@ -12,7 +12,7 @@ A reward of +1 is provided for collecting a yellow banana, and a reward of -1 is
 
 The task is episodic, and the goal is for the agent to get an average score of +13 over 100 consecutive episodes.
 
-A number of agent variants have been developed taking inspiration from the following papers:
+To solve this problem a number of agent variants have been developed taking inspiration from the following papers:
 
 1. [Human-level control through deep reinforcement learning](https://storage.googleapis.com/deepmind-media/dqn/DQNNaturePaper.pdf) 
 2. [Dueling Network Architectures for Deep Reinforcement Learning](https://arxiv.org/pdf/1511.06581.pdf)
@@ -30,7 +30,7 @@ The worst result was using a prioritised experience replay with a dueling networ
 
 
 ## Running the code
-If you want to experiment with the code then clone this repository and follow the Getting Started section below
+If you want to experiment with the code then clone this repository and follow the Getting Started section below.
 
 ### Getting Started
 
@@ -51,12 +51,14 @@ There are a number of notebooks that you may want to explore
 
 1. Navigation.ipynb - this demonstrates how to train the different variants 
 2. Report.ipynb - Provides more details on the different agents and models and the results of these trained agents
-3. Navigation_Pixel.ipynb - This demonstrates an agent that uses an image based state
+3. Navigation_Pixel.ipynb - This demonstrates an agent that uses an image based state.
+
+To make it easy to just view the content of these notebooks I've created PDF versions.
 
 ### Source code
 All source code, outside of the Jupyter notebooks is stored in the libs folder. 
 - dqn.py: provides a function to run multiple espisodes of an agent, automatically saving the model if it achieves the goal
-- agents.py: provides a bas agent class and two subclasses:
+- agents.py: provides a base agent class and two subclasses:
     - AgentExperienceReplay implementing a experience replay algorithm
     - AgentPrioritizedExperienceReplay implementing a prioritised experience replay algorithm
 - models.py: provides a number of alternative Neural Network models:
@@ -66,7 +68,7 @@ All source code, outside of the Jupyter notebooks is stored in the libs folder.
 - replay_buffers.py
     - ReplayBuffer: simple buffer to store experiences. samples are random
     - PrioritizedReplayBuffer: uses a sumtree to manage prioritised experiences
-- image.py: image processing function that are used to simplify the game images
+- image.py: image processing functions that are used to simplify the game images (state).
 
     
 
