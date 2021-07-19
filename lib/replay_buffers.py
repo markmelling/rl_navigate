@@ -12,6 +12,8 @@ import pickle
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
+# sumtree implementation is heavily based on this
+# https://github.com/adventuresinML/adventures-in-ml-code/blob/master/sum_tree_intro.py
 class Node:
     def __init__(self, left, right, is_leaf: bool = False, idx = None):
         self.left = left
