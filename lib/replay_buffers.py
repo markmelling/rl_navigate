@@ -103,7 +103,7 @@ class PrioritizedReplayBuffer(object):
         # when used experienced will be sampled before experiences already with a priority 
         # once sampled they will get a priority and consequently will be sampled 
         # according to their priority
-        #self.not_sampled = queue.Queue()
+        self.not_sampled = queue.Queue()
 
         # allocate the buffer at start - better than failing half way through!
         self.buffer = [self.experience for i in range(self.size)]
