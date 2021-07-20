@@ -2,7 +2,7 @@
 
 [image1]: https://user-images.githubusercontent.com/10624937/42135619-d90f2f28-7d12-11e8-8823-82b970a54d7e.gif "Trained Agent"
 
-In this project deep reinforcement learning has been used to train an agent to collect bananas in a large, square world.
+In this project deep reinforcement learning has been used to train a single agent to collect bananas in a large, square world.
 
 ![Trained Agent][image1]
 
@@ -29,12 +29,41 @@ The worst result was using a prioritised experience replay with a dueling networ
 
 
 
-## Running the code
-If you want to experiment with the code then clone this repository and follow the Getting Started section below.
+## Getting Started
 
-### Getting Started
+### Installing the dependencies
+To run the code and Jupyter Notebooks you need make sure you have the Unity environment, Python and the required libraries installed.
 
-1. Download the environment from one of the links below.  You need only select the environment that matches your operating system:
+#### Installing Python
+The easiest way to install Python, or the correct version of Python is to use conda, and the easiest way to install conda is to install miniconda.
+
+If you don't have conda installed then follow the instructions here: [miniconda] (https://docs.conda.io/en/latest/miniconda.html)
+
+With conda installed create, and activate a conda environment which uses python 3.6, by entering the following command in a terminal window
+
+- For Linux or Mac
+```shell
+conda create --name drlnd python=3.6
+source activate drlnd
+```
+
+- For Windows
+```shell
+conda create --name drlnd python=3.6
+activate drlnd
+```
+
+#### Install the required python libraries
+Clone this repository if you've not done already, then navigate to the python subdirectory and install the dependencies
+```shell
+git clone https://github.com/markmelling/rl_navigate
+cd rl_navigate
+pip install .
+```
+
+#### Install the pre-prepared Unity environment
+
+Download the environment from one of the links below.  You need only select the environment that matches your operating system:
     - Linux: [click here](https://s3-us-west-1.amazonaws.com/udacity-drlnd/P1/Banana/Banana_Linux.zip)
     - Mac OSX: [click here](https://s3-us-west-1.amazonaws.com/udacity-drlnd/P1/Banana/Banana.app.zip)
     - Windows (32-bit): [click here](https://s3-us-west-1.amazonaws.com/udacity-drlnd/P1/Banana/Banana_Windows_x86.zip)
@@ -44,6 +73,29 @@ If you want to experiment with the code then clone this repository and follow th
 
     (_For AWS_) If you'd like to train the agent on AWS (and have not [enabled a virtual screen](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Training-on-Amazon-Web-Service.md)), then please use [this link](https://s3-us-west-1.amazonaws.com/udacity-drlnd/P1/Banana/Banana_Linux_NoVis.zip) to obtain the environment.
 
+#### Setting up Jupyter Notebooks
+
+Before you can run any of the Jupyter notebooks you need to create an [IPython](https://ipython.readthedocs.io/en/stable/install/kernel_install.html) kernel
+
+```shell
+python -m ipykernel install --user --name drlnd --display-name "drlnd"
+```
+
+## Running the code
+The easiest way to run the code to train an agent is to run the `Navigation.ipynb` notebook
+
+First you need to start Jupyter notebooks - in a terminal window, in the root of this repository, type:
+
+```shell
+jupyter notebook
+```
+If everything is installed correctly a browser tab should be opened showing all the files in the root of the repository
+
+Click on `Navigation.ipynb`
+
+Before running any of the code in this notebook change the kernel to match the `drlnd` environment by using the drop-down `Kernel` menu
+
+![](https://user-images.githubusercontent.com/10624937/42386929-76f671f0-8106-11e8-9376-f17da2ae852e.png)
 
 ### Jupyter Notebooks
 
