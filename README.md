@@ -35,11 +35,11 @@ The worst result was using a prioritised experience replay with a dueling networ
 To run the code and Jupyter Notebooks you need make sure you have the Unity environment, Python and the required libraries installed.
 
 #### Installing Python
-The easiest way to install Python, or the correct version of Python is to use conda, and the easiest way to install conda is to install miniconda.
+The easiest way to install Python, or the correct version of Python, is to use conda, and the easiest way to install conda is to install miniconda.
 
-If you don't have conda installed then follow the instructions here: [miniconda] (https://docs.conda.io/en/latest/miniconda.html)
+If you don't have conda installed then follow the instructions here: [miniconda](https://docs.conda.io/en/latest/miniconda.html)
 
-With conda installed create, and activate a conda environment which uses python 3.6, by entering the following command in a terminal window
+With conda installed, create and activate a conda environment which uses python 3.6 by entering the following commands in a terminal window
 
 - For Linux or Mac
 ```shell
@@ -54,7 +54,8 @@ activate drlnd
 ```
 
 #### Install the required python libraries
-Clone this repository if you've not done already, then navigate to the python subdirectory and install the dependencies
+Clone this repository if you've not done it already, then navigate to the python subdirectory and install the dependencies by entering the following commands in a terminal window
+
 ```shell
 git clone https://github.com/markmelling/rl_navigate
 cd rl_navigate
@@ -64,14 +65,14 @@ pip install .
 #### Install the pre-prepared Unity environment
 
 Download the environment from one of the links below.  You need only select the environment that matches your operating system:
-    - Linux: [click here](https://s3-us-west-1.amazonaws.com/udacity-drlnd/P1/Banana/Banana_Linux.zip)
-    - Mac OSX: [click here](https://s3-us-west-1.amazonaws.com/udacity-drlnd/P1/Banana/Banana.app.zip)
-    - Windows (32-bit): [click here](https://s3-us-west-1.amazonaws.com/udacity-drlnd/P1/Banana/Banana_Windows_x86.zip)
-    - Windows (64-bit): [click here](https://s3-us-west-1.amazonaws.com/udacity-drlnd/P1/Banana/Banana_Windows_x86_64.zip)
+- Linux: [click here](https://s3-us-west-1.amazonaws.com/udacity-drlnd/P1/Banana/Banana_Linux.zip)
+- Mac OSX: [click here](https://s3-us-west-1.amazonaws.com/udacity-drlnd/P1/Banana/Banana.app.zip)
+- Windows (32-bit): [click here](https://s3-us-west-1.amazonaws.com/udacity-drlnd/P1/Banana/Banana_Windows_x86.zip)
+- Windows (64-bit): [click here](https://s3-us-west-1.amazonaws.com/udacity-drlnd/P1/Banana/Banana_Windows_x86_64.zip)
     
-    (_For Windows users_) Check out [this link](https://support.microsoft.com/en-us/help/827218/how-to-determine-whether-a-computer-is-running-a-32-bit-version-or-64) if you need help with determining if your computer is running a 32-bit version or 64-bit version of the Windows operating system.
+(_For Windows users_) Check out [this link](https://support.microsoft.com/en-us/help/827218/how-to-determine-whether-a-computer-is-running-a-32-bit-version-or-64) if you need help with determining if your computer is running a 32-bit version or 64-bit version of the Windows operating system.
 
-    (_For AWS_) If you'd like to train the agent on AWS (and have not [enabled a virtual screen](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Training-on-Amazon-Web-Service.md)), then please use [this link](https://s3-us-west-1.amazonaws.com/udacity-drlnd/P1/Banana/Banana_Linux_NoVis.zip) to obtain the environment.
+(_For AWS_) If you'd like to train the agent on AWS (and have not [enabled a virtual screen](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Training-on-Amazon-Web-Service.md)), then please use [this link](https://s3-us-west-1.amazonaws.com/udacity-drlnd/P1/Banana/Banana_Linux_NoVis.zip) to obtain the environment.
 
 #### Setting up Jupyter Notebooks
 
@@ -96,6 +97,9 @@ Click on `Navigation.ipynb`
 Before running any of the code in this notebook change the kernel to match the `drlnd` environment by using the drop-down `Kernel` menu
 
 ![](https://user-images.githubusercontent.com/10624937/42386929-76f671f0-8106-11e8-9376-f17da2ae852e.png)
+
+
+Have fun!
 
 ### Jupyter Notebooks
 
