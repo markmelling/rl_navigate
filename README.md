@@ -99,6 +99,8 @@ Before running any of the code in this notebook change the kernel to match the `
 ![](https://user-images.githubusercontent.com/10624937/42386929-76f671f0-8106-11e8-9376-f17da2ae852e.png)
 
 
+Just follow the instructions in the Navigation notebook to either train a specific agent variant or all of them.
+
 Have fun!
 
 ## Jupyter Notebooks
