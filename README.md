@@ -101,7 +101,7 @@ Before running any of the code in this notebook change the kernel to match the `
 
 Have fun!
 
-### Jupyter Notebooks
+## Jupyter Notebooks
 
 There are a number of notebooks that you may want to explore
 
@@ -111,7 +111,7 @@ There are a number of notebooks that you may want to explore
 
 To make it easy to just view the content of these notebooks I've created PDF versions.
 
-### Source code
+## Source code
 All source code, outside of the Jupyter notebooks is stored in the libs folder. 
 - dqn.py: provides a function to run multiple espisodes of an agent, automatically saving the model if it achieves the goal
 - agents.py: provides a base agent class and two subclasses:
